@@ -59,6 +59,7 @@ class Doctor(models.Model):
     id = models.AutoField(primary_key=True)
     mobile_number = models.CharField(max_length=255)
     email = models.CharField(max_length=255)
+    is_active = models.BooleanField(default=True)
     
     fullname = models.ForeignKey(Fullname, on_delete=models.CASCADE)
     address = models.ForeignKey(Address, on_delete=models.CASCADE)
