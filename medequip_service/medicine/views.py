@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from django.db import models
 from rest_framework.response import Response
@@ -30,6 +31,15 @@ class MedicineAPIView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class MedicineDetailAPIView(APIView):
+    def get(self, request):
+        medicine_id = request.query_params.get('medicine_id', None)
+        if medicine_id is not None:
+            medicine = get_object_or_404(Medicine, id=medicine_id)
+            serializer = MedicineSerializer(medicine)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({"error": "Please provide a medicine_id"}, status=status.HTTP_400_BAD_REQUEST) 
     
 class MedBatchAPIView(APIView):
     def get(self, request):
@@ -62,10 +72,11 @@ class UpdateSoldQuantityAPIView(APIView):
         total_sold = sum(batch.sold for batch in med_batches)
 
         total_quantity = sum(batch.quantity for batch in med_batches)
-
+        quantity_purchased = int(quantity_purchased)
         if int(quantity_purchased) > (total_quantity - total_sold):
             return Response({"error": "Quantity purchased exceeds available stock"}, status=status.HTTP_400_BAD_REQUEST)
         
+        total_price = medicine.price * quantity_purchased
         for batch in med_batches:
             if quantity_purchased <= 0:
                 break
@@ -79,7 +90,7 @@ class UpdateSoldQuantityAPIView(APIView):
                 batch.save()
                 quantity_purchased -= available_quantity
         
-        return Response({"success": "Sold quantity updated successfully"}, status=status.HTTP_200_OK)
+        return Response({"success": "Sold quantity updated successfully", "total_price": total_price}, status=status.HTTP_200_OK)
 
 
 class SearchBatchByMedicineAPIView(APIView):
