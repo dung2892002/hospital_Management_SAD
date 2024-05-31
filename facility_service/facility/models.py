@@ -16,7 +16,7 @@ class Bed(models.Model):
     status = models.BooleanField(default=False)
 
     patient_id = models.IntegerField(null=True)
-    room_id = models.ForeignKey(Room, on_delete=models.CASCADE)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
     
     class Meta:
         db_table = "beds"
