@@ -2,7 +2,7 @@ from .views import MedicalRecordAPIView, SearchMedicalRecordAPIView, UpdateMedic
 from django.urls import path
 
 urlpatterns = [
-    path('medicalrecords/', MedicalRecordAPIView.as_view()),
-    path('medicalrecords/', SearchMedicalRecordAPIView.as_view()),
-    path('update-medicalrecord/', UpdateMedicalRecordAPIView.as_view()),
+    path('medical-records/', MedicalRecordAPIView.as_view()),
+    path('medical-records/search/', SearchMedicalRecordAPIView.as_view()),
+    path('medical-records/update/', UpdateMedicalRecordAPIView.as_view()),
 ]

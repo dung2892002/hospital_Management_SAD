@@ -7,6 +7,11 @@ from .models import Room, Bed
 import json
 
 class RoomAPIView(APIView):
+    def get(self,request):
+        rooms = Room.objects.all()
+        serializer = RoomSerializer(rooms, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
     def post(self, request):
         serializer = RoomSerializer(data=request.data)
         if serializer.is_valid():
@@ -15,6 +20,11 @@ class RoomAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class BedAPIView(APIView):    
+    def get(self,request):
+        beds = Bed.objects.all()
+        serializer = BedSerializer(beds, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
     def post(self, request):
         serializer = BedSerializer(data=request.data)
         
@@ -55,7 +65,7 @@ class SearchBedAPIView(APIView):
         
         if room_id_param is not None:
             beds = beds.filter(room_id=room_id_param)
-
+            
         serializer = BedSerializer(beds, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
@@ -103,7 +113,7 @@ class UpdateBedAPIView(APIView):
         try:
             data = request.data
             bed_id = data.get('id', None)  
-            room_id = data.get('room_id', None)
+            room_id = data.get('room', None)
             if bed_id is None:
                 return Response({"error": "id bed is required"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -111,16 +121,12 @@ class UpdateBedAPIView(APIView):
             room = Room.objects.get(id=room_id)
             room_capacity = room.capacity
         
-            
-            # Update bed
             serializer = BedSerializer(bed, data=data)
             if serializer.is_valid():
                 serializer.save()
 
-                # Count beds with status=true in the same room
                 active_beds_count = Bed.objects.filter(room_id=room.id, status=True).count()
 
-                # Check if the room's status needs to be updated
                 if active_beds_count == room_capacity:
                     room.status = True
                     room.save()

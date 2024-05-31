@@ -20,15 +20,8 @@ class MedicalRecordAPIView(APIView):
 class SearchMedicalRecordAPIView(APIView):
     def get(self, request):
         patientID_param = request.query_params.get('patient_id', None)
-        doctorID_param = request.query_params.get('doctor_id', None)
 
-        medicalRecords = MedicalRecord.objects.all()
-
-        if patientID_param is not None:
-            medicalRecords = medicalRecords.filter(patient_id=patientID_param)
-        
-        if doctorID_param is not None:
-            medicalRecords = medicalRecords.filter(doctor_id=doctorID_param)
+        medicalRecords = MedicalRecord.objects.filter(patient_id=patientID_param).all()
 
         serializer = MedicalRecordSerializer(medicalRecords, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -37,7 +30,7 @@ class UpdateMedicalRecordAPIView(APIView):
     def put(self, request):
         try:
             data = request.data
-            medicalRecordID = data.get('medicalrecord_id', None)
+            medicalRecordID = data.get('id', None)
             
             if medicalRecordID is None:
                 return Response({"error": "MedicalRecordID is required"}, status=status.HTTP_400_BAD_REQUEST)

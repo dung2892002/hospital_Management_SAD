@@ -19,5 +19,5 @@ from facility import urls as facility_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("api/v1/facility/", include(facility_urls)),
+    path("api/v1/", include(facility_urls)),
 ]
